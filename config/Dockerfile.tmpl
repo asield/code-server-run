@@ -1,0 +1,52 @@
+FROM golang:1.24-bookworm
+
+
+ARG BUILD_USER=go_user
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+ARG DOCKER_GID=999
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+
+RUN apt-get update && \
+    apt-get install -y \
+    curl \
+    sudo \
+    ca-certificates \
+    gnupg && \
+    rm -rf /var/lib/apt/lists/*
+
+
+RUN install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc && \
+    chmod a+r /etc/apt/keyrings/docker.asc && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list && \
+    apt-get update && \
+    apt-get install -y docker-ce-cli
+
+
+RUN groupmod -g ${DOCKER_GID} docker || groupadd -g ${DOCKER_GID} docker
+RUN groupadd --gid ${GROUP_ID} ${BUILD_USER} || true
+RUN useradd --uid ${USER_ID} --gid ${GROUP_ID} --shell /bin/bash --create-home ${BUILD_USER}
+RUN usermod -aG sudo,docker ${BUILD_USER}
+RUN echo "%sudo ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/sudo_nopasswd
+
+
+USER ${BUILD_USER}
+WORKDIR /home/${BUILD_USER}
+
+
+RUN curl -fsSL https://code-server.dev/install.sh | sh \
+  && code-server --install-extension golang.go \
+  && code-server --install-extension ms-azuretools.vscode-docker \
+  && code-server --install-extension google.geminicodeassist
+
+
+RUN mkdir -p /home/${BUILD_USER}/.local/share/code-server/User \
+  && echo '{ "workbench.colorTheme": "Visual Studio Dark" }' > /home/${BUILD_USER}/.local/share/code-server/User/settings.json
+
+EXPOSE 8080
+
+
+CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "/home/{{.Username}}/project"]

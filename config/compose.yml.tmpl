@@ -1,0 +1,28 @@
+# config/compose.yml.tmpl
+volumes:
+  code-server-data:
+
+services:
+  code-server:
+    image: code-server:latest
+    build:
+      context: ..
+      dockerfile: .dev-env/Dockerfile
+      args:
+        BUILD_USER: {{.Username}}
+        USER_ID: ${UID:-1000}
+        GROUP_ID: ${GID:-1000}
+        DOCKER_GID: ${DOCKER_GID:-999}
+    
+    container_name: dev_env_{{.ProjectName}}
+    
+    environment:
+      - PASSWORD=${DEV_PASSWORD?Debes definir DEV_PASSWORD en el archivo .env}
+      
+    ports:
+      - "8080:8080"
+      
+    volumes:
+      - ..:/home/{{.Username}}/project
+      - code-server-data:/home/{{.Username}}/.local/share/code-server
+      - /var/run/docker.sock:/var/run/docker.sock
