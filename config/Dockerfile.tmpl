@@ -71,4 +71,4 @@ RUN mkdir -p /home/${BUILD_USER}/.local/share/code-server/User && \
 
 EXPOSE 3000
 
-CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "/home/{{.Username}}/project"]
+CMD ["code-server", "--bind-addr", "0.0.0.0:3000", "/home/{{.Username}}/project"]
