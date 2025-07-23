@@ -1,10 +1,11 @@
 # config/compose.yml.tmpl
 volumes:
-  code-server-data:
+  # El nombre del volumen ya no incluye el puerto
+  code-server-data-{{.ProjectName}}:
 
 services:
   code-server:
-    image: code-server:latest
+    image: dev-env/{{.Language}}:latest
     build:
       context: ..
       dockerfile: .dev-env/Dockerfile
@@ -14,15 +15,18 @@ services:
         GROUP_ID: ${GID:-1000}
         DOCKER_GID: ${DOCKER_GID:-999}
     
+    # El nombre del contenedor ya no incluye el puerto
     container_name: dev_env_{{.ProjectName}}
     
     environment:
       - PASSWORD=${DEV_PASSWORD?Debes definir DEV_PASSWORD en el archivo .env}
       
     ports:
-      - "8080:8080"
+      # Puerto fijo 3000
+      - "3000:3000"
       
     volumes:
       - ..:/home/{{.Username}}/project
-      - code-server-data:/home/{{.Username}}/.local/share/code-server
+      # Volumen nombrado sin el puerto
+      - code-server-data-{{.ProjectName}}:/home/{{.Username}}/.local/share/code-server
       - /var/run/docker.sock:/var/run/docker.sock

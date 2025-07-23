@@ -1,5 +1,17 @@
+{{- /*
+Dockerfile.tmpl: Plantilla dinámica para el entorno de desarrollo.
+*/ -}}
+{{- if eq .Language "go" -}}
 FROM golang:1.24-bookworm
-
+{{- else if eq .Language "python" -}}
+FROM python:3.13-bookworm
+{{- else if eq .Language "node" -}}
+FROM node:24-bookworm
+{{- else if eq .Language "rust" -}}
+FROM rust:1.88-bookworm
+{{- else if eq .Language "java" -}}
+FROM openjdk:26-jdk-bookworm
+{{- end }}
 
 ARG BUILD_USER=go_user
 ARG USER_ID=1000
@@ -7,7 +19,6 @@ ARG GROUP_ID=1000
 ARG DOCKER_GID=999
 
 ENV DEBIAN_FRONTEND=noninteractive
-
 
 RUN apt-get update && \
     apt-get install -y \
@@ -27,26 +38,37 @@ RUN install -m 0755 -d /etc/apt/keyrings && \
 
 
 RUN groupmod -g ${DOCKER_GID} docker || groupadd -g ${DOCKER_GID} docker
-RUN groupadd --gid ${GROUP_ID} ${BUILD_USER} || true
-RUN useradd --uid ${USER_ID} --gid ${GROUP_ID} --shell /bin/bash --create-home ${BUILD_USER}
+RUN groupadd -o --gid ${GROUP_ID} ${BUILD_USER} || true
+RUN useradd -o --uid ${USER_ID} --gid ${GROUP_ID} --shell /bin/bash --create-home ${BUILD_USER}
 RUN usermod -aG sudo,docker ${BUILD_USER}
 RUN echo "%sudo ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/sudo_nopasswd
-
 
 USER ${BUILD_USER}
 WORKDIR /home/${BUILD_USER}
 
-
 RUN curl -fsSL https://code-server.dev/install.sh | sh \
+  {{- if eq .Language "go" }}
   && code-server --install-extension golang.go \
+  {{- else if eq .Language "python" }}
+  && code-server --install-extension ms-python.python \
+  {{- else if eq .Language "node" }}
+  && code-server --install-extension dbaeumer.vscode-eslint \
+  {{- else if eq .Language "rust" }}
+  && code-server --install-extension rust-lang.rust-analyzer \
+  {{- else if eq .Language "java" }}
+  && code-server --install-extension redhat.java \
+  {{- end }}
   && code-server --install-extension ms-azuretools.vscode-docker \
   && code-server --install-extension google.geminicodeassist
 
 
-RUN mkdir -p /home/${BUILD_USER}/.local/share/code-server/User \
-  && echo '{ "workbench.colorTheme": "Visual Studio Dark" }' > /home/${BUILD_USER}/.local/share/code-server/User/settings.json
+RUN mkdir -p /home/${BUILD_USER}/.local/share/code-server/User && \
+    echo '{' > /home/${BUILD_USER}/.local/share/code-server/User/settings.json && \
+    echo '  "workbench.colorTheme": "Visual Studio Dark",' >> /home/${BUILD_USER}/.local/share/code-server/User/settings.json && \
+    echo '  "terminal.integrated.env.linux": {' >> /home/${BUILD_USER}/.local/share/code-server/User/settings.json && \
+    echo '    "PATH": "${env:PATH}"' >> /home/${BUILD_USER}/.local/share/code-server/User/settings.json && \
+    echo '}' >> /home/${BUILD_USER}/.local/share/code-server/User/settings.json 
 
-EXPOSE 8080
-
+EXPOSE 3000
 
 CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "/home/{{.Username}}/project"]

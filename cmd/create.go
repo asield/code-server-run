@@ -4,6 +4,7 @@ package cmd
 import (
 	"code-server-run/config"
 	"code-server-run/runner"
+	//"code-server-run/utils"
 	"fmt"
 	"log"
 	"os"
@@ -15,12 +16,22 @@ import (
 	"golang.org/x/term"
 )
 
+var language string
+
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Crea y levanta el entorno de desarrollo en el directorio actual.",
-	Long:  `Este comando genera los archivos Dockerfile, compose.yml y .env, y luego ejecuta 'docker-compose up' para iniciar el entorno.`,
+	Long:  `Este comando genera los archivos de configuración y luego ejecuta 'docker compose up' para iniciar el entorno en el puerto 3000.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("🚀 Iniciando la creación del entorno de desarrollo...")
+
+		if _, err := os.Stat(config.ConfigDir); !os.IsNotExist(err) {
+			log.Fatalf("❌ Ya existe un directorio '%s' aquí. Si quieres recrear el entorno, primero usa 'dev-env destroy --cleanup'.", config.ConfigDir)
+		}
+
+		if !config.IsLanguageSupported(language) {
+			log.Fatalf("❌ Lenguaje '%s' no soportado. Los lenguajes disponibles son: go, python, node, rust, java.", language)
+		}
 
 		currentUser, err := user.Current()
 		if err != nil {
@@ -35,6 +46,7 @@ var createCmd = &cobra.Command{
 		data := config.TemplateData{
 			Username:    currentUser.Username,
 			ProjectName: filepath.Base(wd),
+			Language:    language,
 		}
 
 		fmt.Print("🔑 Por favor, introduce la contraseña para code-server: ")
@@ -53,10 +65,11 @@ var createCmd = &cobra.Command{
 			log.Fatalf("❌ Error fatal durante la ejecución: %v", err)
 		}
 
-		log.Println("🎉 ¡Entorno listo y funcionando en http://localhost:8080!")
+		log.Printf("🎉 ¡Entorno de %s listo y funcionando en http://localhost:3000!\n", language)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(createCmd)
+	createCmd.Flags().StringVarP(&language, "lang", "l", "go", "El lenguaje de programación para el entorno (go, python, node, rust, java)")
 }
