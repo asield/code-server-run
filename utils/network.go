@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// WaitForServer espera a que un servidor HTTP esté disponible en una URL específica.
 func WaitForServer(url string, timeout time.Duration) error {
 	fmt.Print("⏳ Esperando que el servidor esté listo... ")
 
@@ -19,7 +20,8 @@ func WaitForServer(url string, timeout time.Duration) error {
 
 	for time.Now().Before(deadline) {
 		resp, err := client.Get(url)
-		if err == nil && resp.StatusCode == http.StatusOK {
+		// Aceptamos cualquier código de estado 2xx o 3xx como una señal de que el servidor está activo.
+		if err == nil && resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusBadRequest {
 			if resp.Body != nil {
 				resp.Body.Close()
 			}
@@ -32,9 +34,9 @@ func WaitForServer(url string, timeout time.Duration) error {
 		}
 
 		fmt.Print(".")
-		time.Sleep(1 * time.Second)
+		time.Sleep(2 * time.Second)
 	}
 
 	fmt.Println()
-	return fmt.Errorf("el servidor no respondió en %v", timeout)
+	return fmt.Errorf("el servidor en %s no respondió en %v", url, timeout)
 }

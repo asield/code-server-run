@@ -1,0 +1,23 @@
+# Archivo .gitignore para el proyecto dev-env
+
+# 1. Ignorar directorios de binarios compilados
+# Estas carpetas son generadas por el Makefile.
+/bin
+/dist
+
+# 2. Ignorar el binario si se compila en la raíz con otro nombre
+dev-env
+start
+
+# 3. Ignorar archivos de configuración generados por la herramienta.
+# El código fuente de Go es lo que se versiona, no los archivos que este genera.
+Dockerfile
+compose.yml
+.env
+
+# 4. Ignorar archivos comunes de sistema operativo y editores (Buena práctica)
+.DS_Store
+.vscode/
+.idea/
+.dev-env/
+.local/
