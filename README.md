@@ -20,7 +20,7 @@ Esta herramienta genera automáticamente todos los archivos de configuración ne
 
 * **Multi-Language Support:** Create development environments for Go, Python, Node.js, Rust, and Java with a single flag.
 * **Zero Configuration:** Generates all required files on the fly based on your current user and directory.
-* **VS Code in the Browser:** Provides a full-featured code-server instance, accessible from any web browser at [http://localhost:8080](http://localhost:8080).
+* **VS Code in the Browser:** Provides a full-featured code-server instance, accessible from any web browser at [http://localhost:3000](http://localhost:3000).
 * **Seamless File Permissions:** Automatically handles user (UID) and group (GID) IDs to prevent permission conflicts inside the container.
 * **Docker-in-Docker Ready:** Includes the Docker CLI and mounts the host's Docker socket, allowing you to run Docker commands from within the dev environment.
 * **Fully Contained:** The Go binary includes all templates, making it a single, portable executable.
@@ -78,7 +78,7 @@ Using `dev-env` is simple and intuitive.
    dev-env create --lang python
    ```
 
-   The tool will prompt you for a password for code-server, build the Docker image, start the container, and open the environment in your default browser at [http://localhost:8080](http://localhost:8080).
+   The tool will prompt you for a password for code-server, build the Docker image, start the container, and open the environment in your default browser at [http://localhost:3000](http://localhost:3000).
 
 3. **Stop and start the environment:**
 
@@ -129,7 +129,7 @@ This tool mounts the host's Docker socket (`/var/run/docker.sock`) into the cont
 
 * **Soporte Multi-lenguaje:** Crea entornos de desarrollo para Go, Python, Node.js, Rust y Java con un solo flag.
 * **Cero Configuración:** Genera todos los archivos necesarios al vuelo, basándose en tu usuario y directorio actual.
-* **VS Code en el Navegador:** Provee una instancia completa de code-server, accesible desde cualquier navegador web en [http://localhost:8080](http://localhost:8080).
+* **VS Code en el Navegador:** Provee una instancia completa de code-server, accesible desde cualquier navegador web en [http://localhost:3000](http://localhost:3000).
 * **Permisos de Archivo Perfectos:** Gestiona automáticamente los IDs de tu usuario (UID) y grupo (GID) para prevenir conflictos de permisos dentro del contenedor.
 * **Listo para Docker-in-Docker:** Incluye el CLI de Docker y monta el socket de Docker del anfitrión, permitiéndote ejecutar comandos de Docker desde dentro del entorno.
 * **Autocontenido:** El binario de Go incluye todas las plantillas, convirtiéndolo en un único ejecutable portable.
@@ -187,7 +187,7 @@ Usar `dev-env` está diseñado para ser simple e intuitivo.
    dev-env create --lang python
    ```
 
-   La herramienta te pedirá una contraseña para code-server, construirá la imagen de Docker, iniciará el contenedor y abrirá el entorno en tu navegador por defecto en [http://localhost:8080](http://localhost:8080).
+   La herramienta te pedirá una contraseña para code-server, construirá la imagen de Docker, iniciará el contenedor y abrirá el entorno en tu navegador por defecto en [http://localhost:3000](http://localhost:3000).
 
 3. **Detén e inicia el entorno:**
 
