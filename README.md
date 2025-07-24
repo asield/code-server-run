@@ -20,7 +20,7 @@ Esta herramienta genera automáticamente todos los archivos de configuración ne
 
 * **Multi-Language Support:** Create development environments for Go, Python, Node.js, Rust, and Java with a single flag.
 * **Zero Configuration:** Generates all required files on the fly based on your current user and directory.
-* **VS Code in the Browser:** Provides a full-featured code-server instance, accessible from any web browser at [http://localhost:8080](http://localhost:3000).
+* **VS Code in the Browser:** Provides a full-featured code-server instance, accessible from any web browser at [http://localhost:3000](http://localhost:3000).
 * **Seamless File Permissions:** Automatically handles user (UID) and group (GID) IDs to prevent permission conflicts inside the container.
 * **Docker-in-Docker Ready:** Includes the Docker CLI and mounts the host's Docker socket, allowing you to run Docker commands from within the dev environment.
 * **Fully Contained:** The Go binary includes all templates, making it a single, portable executable.
